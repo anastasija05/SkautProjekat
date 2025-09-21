@@ -32,81 +32,107 @@ type
   private
     { Private declarations }
   public
-     GuestName, GuestLastName, GuestEmail, GuestPhone, GuestUsername, GuestPassword, username: string;
-     GuestID: integer;
+    GuestName, GuestLastName, GuestEmail, GuestPhone, GuestUsername, GuestPassword, username: string;
+    GuestID: Integer;
   end;
 
 var
   Form1: TForm1;
 
 implementation
-        uses uMain;
+
+uses uMain;
+
 {$R *.fmx}
 
 procedure TForm1.buttonLoginClick(Sender: TObject);
-var pwd: string;
+var
+  PwdDB: string;
 begin
-    username := editUsername.Text;
-    if trim(editUsername.Text)='' then
-      begin
-        ShowMessage('Molimo vas unesite korisnicko ime!');
-        editUsername.SetFocus;
-      end;
-    if trim(editSifra.Text)='' then
-      begin
-        ShowMessage('Molimo vas unesite sifru!');
-        editUsername.SetFocus;
-      end
-    else
-      begin
-      //PROVERA DA LI USERNAME I SIFRA POSTOJI U BAZI
-        with baza do begin
-          dm.open;
-          qtemp.sql.clear;
-          qtemp.SQL.Text:='Select * FROM gosti WHERE username= '+quotedstr(editUsername.text);
-          qtemp.Open;
-            if qtemp.RecordCount > 0 then
-              begin
-                pwd:=qtemp.FieldByName('sifra').AsString;
-                if pwd= editSifra.Text then
-                  begin
-                    qtemp.SQL.Text := 'SELECT gostID FROM gosti WHERE username = :username;';
-                    qtemp.ParamByName('username').AsString := editUsername.Text;
+  // 1) Provera praznih polja
+  if Trim(editUsername.Text) = '' then
+  begin
+    ShowMessage('Molimo vas unesite korisničko ime!');
+    editUsername.SetFocus;
+    Exit;
+  end;
 
-                    form1.Hide;
-                    if not Assigned(formMain) then
-                    formMain:= tformmain.Create(self);
-                    formMain.ShowModal(
-                                      procedure(Modalresult: TmodalResult)
-                                        begin
-                                          if ModalResult = mrClose then Application.Terminate
-                                        end);
-                  end
-              else
-                 begin
-                  ShowMessage('Pogresna Sifra!');
-                 end;
-              end
-            else begin
-              ShowMessage('Korisnicko ime nije validno!')
-            end;
-           end;
-          end;
-        end;
+  if Trim(editSifra.Text) = '' then
+  begin
+    ShowMessage('Molimo vas unesite šifru!');
+    editSifra.SetFocus;
+    Exit;
+  end;
+
+  // 2) Povezivanje na bazu (ako već nije)
+  if not Baza.dm.Connected then
+    Baza.dm.Connected := True;
+
+  // 3) Provera korisnika
+  with Baza.Qtemp do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Text :=
+      'SELECT gostID, ime, prezime, email, telefon, username, sifra ' +
+      'FROM gosti WHERE username = :username';
+    ParamByName('username').AsString := editUsername.Text;
+    Open;
+
+    if IsEmpty then
+    begin
+      ShowMessage('Korisničko ime nije validno!');
+      Exit;
+    end;
+
+    // 4) Provera šifre
+    PwdDB := FieldByName('sifra').AsString;
+    if PwdDB <> editSifra.Text then
+    begin
+      ShowMessage('Pogrešna šifra!');
+      Exit;
+    end;
+
+    // 5) Uspesan login → čuvamo podatke o gostu
+    GuestID       := FieldByName('gostID').AsInteger;
+    GuestName     := FieldByName('ime').AsString;
+    GuestLastName := FieldByName('prezime').AsString;
+    GuestEmail    := FieldByName('email').AsString;
+    GuestPhone    := FieldByName('telefon').AsString;
+    GuestUsername := FieldByName('username').AsString;
+    GuestPassword := PwdDB;
+
+    username := GuestUsername;
+
+    // 6) Otvaranje glavne forme
+    Self.Hide;
+    if not Assigned(formMain) then
+      formMain := TformMain.Create(Self);
+
+    formMain.ShowModal(
+      procedure(ModalResult: TModalResult)
+      begin
+        if ModalResult = mrClose then
+          Application.Terminate;
+      end
+    );
+  end;
+end;
 
 procedure TForm1.cbPrikaziSifruChange(Sender: TObject);
 begin
- editSifra.Password:= not cbPrikaziSifru.IsChecked;
+  editSifra.Password := not cbPrikaziSifru.IsChecked;
 end;
 
 procedure TForm1.registracijaTextClick(Sender: TObject);
 begin
-  ShowMessage('Ova opcija je jos u izradi!');
+  ShowMessage('Ova opcija je još u izradi!');
 end;
 
 procedure TForm1.Text3Click(Sender: TObject);
 begin
-  ShowMessage('Ova opcija je jos u izradi!');
+  ShowMessage('Ova opcija je još u izradi!');
 end;
 
 end.
+

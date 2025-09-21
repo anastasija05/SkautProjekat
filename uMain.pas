@@ -22,8 +22,10 @@ type
     ListBoxItem3: TListBoxItem;
     ListBoxItem4: TListBoxItem;
     ListBoxItem5: TListBoxItem;
+    btnProdaja: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure btnProdajaClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -36,10 +38,18 @@ var
 
 implementation
 
-uses uMain2 ;
+uses uMain2,uProdaja ;
 
 
 {$R *.fmx}
+
+procedure TformMain.btnProdajaClick(Sender: TObject);
+begin
+  Self.Hide;
+  if not Assigned(frmProdaja) then
+    frmProdaja := TfrmProdaja.Create(Self);
+  frmProdaja.Show;
+end;
 
 procedure TformMain.Button1Click(Sender: TObject);
 begin

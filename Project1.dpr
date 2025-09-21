@@ -6,7 +6,8 @@ uses
   Unit1 in 'Unit1.pas' {Form1},
   uDM in 'uDM.pas' {Baza},
   uMain in 'uMain.pas' {formMain},
-  uMain2 in 'uMain2.pas' {formMain2};
+  uMain2 in 'uMain2.pas' {formMain2},
+  uProdaja in 'uProdaja.pas' {frmProdaja};
 
 {$R *.res}
 
@@ -16,5 +17,6 @@ begin
   Application.CreateForm(TBaza, Baza);
   Application.CreateForm(TformMain, formMain);
   Application.CreateForm(TformMain2, formMain2);
+  Application.CreateForm(TfrmProdaja, frmProdaja);
   Application.Run;
 end.

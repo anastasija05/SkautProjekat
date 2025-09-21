@@ -12,8 +12,8 @@ object Baza: TBaza
     Params.Strings = (
       'DriverID=SQLite'
       
-        'Database=C:\Users\nikol\Downloads\Projekat\Projekat\Projekat\chi' +
-        'nook.db')
+        'Database=C:\Embracadero Projects\Projekat Skaut\SkautProjekat-ma' +
+        'in\chinook.db')
     LoginPrompt = False
     Left = 200
     Top = 176

@@ -142,6 +142,10 @@
             <Form>formMain2</Form>
             <FormType>fmx</FormType>
         </DCCReference>
+        <DCCReference Include="uProdaja.pas">
+            <Form>frmProdaja</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
